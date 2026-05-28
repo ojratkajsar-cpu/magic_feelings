@@ -11,6 +11,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Montserrat:ital,wght@0,300..600;1,300..600&display=swap" rel="stylesheet">
 
 <style>
+  :root {
+    /* Responsive custom variables for full scaling of the 3D envelope */
+    --env-w: min(320px, 85vw);
+    --env-h: calc(var(--env-w) * 0.6875);
+  }
+
   * { 
     margin: 0; 
     padding: 0; 
@@ -67,21 +73,27 @@
     display: flex; 
   }
 
-  /* CUSTOM PREMIUM CURSOR HINT */
+  /* CUSTOM PREMIUM CURSOR HINT (DESKTOP ONLY) */
   #cursor-dot {
-    position: fixed; 
-    z-index: 999;
-    width: 16px; 
-    height: 16px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,190,210,1) 0%, rgba(255,110,160,0.8) 70%, rgba(255,80,130,0) 100%);
-    pointer-events: none;
-    transform: translate(-50%,-50%);
-    transition: transform 0.08s ease-out;
-    box-shadow: 0 0 20px rgba(255,100,150,0.8), 0 0 40px rgba(255,80,130,0.4);
+    display: none;
+  }
+  @media (hover: hover) {
+    #cursor-dot {
+      display: block;
+      position: fixed; 
+      z-index: 999;
+      width: 16px; 
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,190,210,1) 0%, rgba(255,110,160,0.8) 70%, rgba(255,80,130,0) 100%);
+      pointer-events: none;
+      transform: translate(-50%,-50%);
+      transition: transform 0.08s ease-out;
+      box-shadow: 0 0 20px rgba(255,100,150,0.8), 0 0 40px rgba(255,80,130,0.4);
+    }
   }
 
-  /* STEP 1: INTERACTIVE 3D GLASSMOPRHIC ENVELOPE */
+  /* STEP 1: INTERACTIVE 3D SCALABLE ENVELOPE */
   #step1 .pulse-text {
     font-size: clamp(1.2rem, 5vw, 1.8rem);
     color: #ffebf2;
@@ -90,6 +102,7 @@
     font-style: italic;
     margin-bottom: 2.5rem;
     text-shadow: 0 0 15px rgba(255,150,180,0.4);
+    padding: 0 1rem;
   }
 
   .envelope-wrapper {
@@ -101,8 +114,8 @@
     justify-content: center;
     align-items: center;
     position: relative;
-    width: 320px;
-    height: 220px;
+    width: var(--env-w);
+    height: var(--env-h);
   }
   .envelope-wrapper:hover {
     transform: scale(1.05) rotateY(3deg) rotateX(3deg);
@@ -127,10 +140,10 @@
     position: absolute;
     top: 0; left: 0;
     width: 0; height: 0;
-    border-left: 160px solid transparent;
-    border-right: 160px solid transparent;
-    border-top: 115px solid rgba(255, 140, 175, 0.15);
-    border-radius: 16px 16px 0 0;
+    border-left: calc(var(--env-w) / 2) solid transparent;
+    border-right: calc(var(--env-w) / 2) solid transparent;
+    border-top: calc(var(--env-h) * 0.523) solid rgba(255, 140, 175, 0.15);
+    border-radius: 14px 14px 0 0;
     transform-origin: top;
     transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
     z-index: 4;
@@ -139,9 +152,10 @@
   /* Inner love letter preview */
   .envelope-paper {
     position: absolute;
-    bottom: 12px; left: 12px;
-    width: 296px;
-    height: 196px;
+    bottom: calc(var(--env-h) * 0.054); 
+    left: calc(var(--env-w) * 0.0375);
+    width: calc(var(--env-w) * 0.925);
+    height: calc(var(--env-h) * 0.89);
     background: rgba(20, 7, 36, 0.95);
     border: 1px solid rgba(255, 150, 180, 0.25);
     border-radius: 12px;
@@ -152,20 +166,20 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 1.5rem;
+    padding: 1rem;
     color: #ffaac8;
     font-family: 'Lora', serif;
     font-style: italic;
     box-shadow: 0 10px 25px rgba(0,0,0,0.5);
   }
   .envelope-paper p {
-    font-size: 1.15rem;
-    margin-bottom: 0.5rem;
+    font-size: clamp(0.95rem, 4vw, 1.15rem);
+    margin-bottom: 0.3rem;
     color: #ffe0eb;
     text-shadow: 0 0 10px rgba(255,100,150,0.4);
   }
   .envelope-paper span {
-    font-size: 0.8rem;
+    font-size: clamp(0.7rem, 3vw, 0.8rem);
     font-family: 'Montserrat', sans-serif;
     color: rgba(255,180,210,0.5);
     text-transform: uppercase;
@@ -186,9 +200,9 @@
     position: absolute;
     bottom: 0; left: 0;
     width: 0; height: 0;
-    border-left: 160px solid rgba(255, 180, 210, 0.05);
-    border-right: 160px solid rgba(255, 180, 210, 0.05);
-    border-bottom: 110px solid rgba(255, 160, 190, 0.12);
+    border-left: calc(var(--env-w) / 2) solid rgba(255, 180, 210, 0.05);
+    border-right: calc(var(--env-w) / 2) solid rgba(255, 180, 210, 0.05);
+    border-bottom: calc(var(--env-h) * 0.5) solid rgba(255, 160, 190, 0.12);
   }
   .envelope-front::after {
     content: '';
@@ -201,9 +215,11 @@
   /* Wax Seal Heart Button */
   .wax-seal {
     position: absolute;
-    top: 110px; left: 50%;
+    top: calc(var(--env-h) * 0.5); 
+    left: 50%;
     transform: translate(-50%, -50%);
-    width: 48px; height: 48px;
+    width: clamp(42px, var(--env-w) * 0.15, 50px); 
+    height: clamp(42px, var(--env-w) * 0.15, 50px);
     background: radial-gradient(circle, #ff5e94 0%, #d6004b 100%);
     border-radius: 50%;
     box-shadow: 0 6px 20px rgba(255, 50, 100, 0.6), inset 0 2px 5px rgba(255,255,255,0.4);
@@ -211,14 +227,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     color: #fff;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     animation: seal-pulse 2s infinite ease-in-out;
   }
   .wax-seal:hover {
-    transform: translate(-50%, -50%) scale(1.12);
+    transform: translate(-50%, -50%) scale(1.1);
     box-shadow: 0 8px 25px rgba(255, 50, 100, 0.8), inset 0 2px 5px rgba(255,255,255,0.5);
   }
 
@@ -240,7 +256,7 @@
     z-index: 1;
   }
   .envelope-wrapper.opened .envelope-paper {
-    transform: translateY(-135px) scale(1.05);
+    transform: translateY(calc(var(--env-h) * -0.61)) scale(1.05);
     opacity: 0.95;
     z-index: 10;
   }
@@ -251,12 +267,13 @@
   }
 
   #step1 .sub-hint {
-    margin-top: 1rem;
-    font-size: 0.9rem;
+    margin-top: 1.2rem;
+    font-size: 0.85rem;
     font-family: 'Montserrat', sans-serif;
     color: rgba(255,200,220,0.45);
     letter-spacing: 0.15em;
     text-transform: uppercase;
+    padding: 0 1rem;
   }
 
   /* PREMIUM GLASSMORPHISM LETTER CARD */
@@ -524,6 +541,50 @@
     inset: 0;
     pointer-events: none;
     z-index: 3;
+  }
+
+  /* RESPONSIVE MOBILE MEDIA QUERIES */
+  @media (max-width: 480px) {
+    /* Letter card mobile padding */
+    .letter-card {
+      padding: 2rem 1.4rem;
+      border-radius: 22px;
+      max-width: 90vw;
+    }
+    .text-block {
+      margin: 0.5rem 0;
+      line-height: 1.6;
+    }
+    .text-block.highlight {
+      margin: 0.9rem 0;
+    }
+
+    /* Step 4 Buttons mobile adjustments to fit side-by-side */
+    .button-group {
+      gap: 0.8rem;
+    }
+    .custom-btn {
+      padding: 0.8rem 1.6rem;
+      font-size: 1rem;
+    }
+
+    /* Floating audio toggle mobile sizing */
+    #audio-toggle {
+      top: 1.2rem;
+      right: 1.2rem;
+      width: 38px;
+      height: 38px;
+    }
+    #audio-toggle svg {
+      width: 18px;
+      height: 18px;
+    }
+    
+    #audio-hint {
+      bottom: 1.5rem;
+      font-size: 0.75rem;
+      width: 85%;
+    }
   }
 </style>
 </head>
@@ -796,7 +857,6 @@ class RomanticSynth {
     if (!this.isPlaying) return;
 
     // Harmonious, bright D Major arpeggio scales
-    // Dmaj7, Gmaj7, Bm9, A6
     this.chords = [
       [146.83, 185.00, 220.00, 277.18, 369.99], // Dmaj7
       [196.00, 246.94, 293.66, 369.99, 440.00], // Gmaj7
@@ -944,9 +1004,12 @@ function onMove(x, y) {
   
   mx = x; my = y;
   
-  cursorDot.style.left = x + 'px';
-  cursorDot.style.top = y + 'px';
-  cursorDot.style.transform = 'translate(-50%,-50%) scale(1.15)';
+  // Custom premium cursor tracking (updates element for desktop only)
+  if (cursorDot) {
+    cursorDot.style.left = x + 'px';
+    cursorDot.style.top = y + 'px';
+    cursorDot.style.transform = 'translate(-50%,-50%) scale(1.15)';
+  }
   
   if (isMoving) {
     for (let i = 0; i < 2; i++) {
@@ -970,7 +1033,9 @@ document.addEventListener('touchmove', e => {
 }, { passive: true });
 
 document.addEventListener('mouseleave', () => {
-  cursorDot.style.transform = 'translate(-50%,-50%) scale(0)';
+  if (cursorDot) {
+    cursorDot.style.transform = 'translate(-50%,-50%) scale(0)';
+  }
 });
 
 
@@ -1023,46 +1088,38 @@ class Firefly {
     this.angle = Math.random() * Math.PI * 2;
     this.speed = 0.01 + Math.random() * 0.02;
     
-    // warm golden and pink/purple pastel tones
     this.hue = Math.random() < 0.6 ? (40 + Math.random() * 15) : (290 + Math.random() * 40);
     this.alpha = 0.3 + Math.random() * 0.6;
     this.breath = Math.random() * Math.PI;
     this.breathSpeed = 0.02 + Math.random() * 0.03;
   }
   update() {
-    // Breathing glow
     this.breath += this.breathSpeed;
     this.alpha = 0.35 + Math.sin(this.breath) * 0.45;
 
-    // Organic drift
     this.angle += this.speed;
     this.x += Math.cos(this.angle) * 0.35 + this.vx;
     this.y += Math.sin(this.angle * 0.5) * 0.35 + this.vy;
 
-    // Slowly reduce inertia
     this.vx *= 0.95;
     this.vy *= 0.95;
 
-    // INTERACTION WITH CURSOR
     const dx = mx - this.x;
     const dy = my - this.y;
     const dist = Math.hypot(dx, dy);
 
     if (dist < 180) {
       if (mouseSpeed < 8) {
-        // Slow mouse: fireflies are attracted, swarming gently
         const pull = (180 - dist) / 180;
         this.vx += (dx / dist) * pull * 0.07;
         this.vy += (dy / dist) * pull * 0.07;
       } else {
-        // Fast mouse: fireflies disperse rapidly, scared away!
         const push = (100 - Math.min(dist, 100)) / 100;
         this.vx -= (dx / dist) * push * 0.45;
         this.vy -= (dy / dist) * push * 0.45;
       }
     }
 
-    // Clamp speed limits
     const limit = 2.2;
     const velocity = Math.hypot(this.vx, this.vy);
     if (velocity > limit) {
@@ -1070,7 +1127,6 @@ class Firefly {
       this.vy = (this.vy / velocity) * limit;
     }
 
-    // Screen wrapping bounds
     if (this.x < -15) this.x = W + 15;
     if (this.x > W + 15) this.x = -15;
     if (this.y < -15) this.y = H + 15;
@@ -1080,7 +1136,6 @@ class Firefly {
     ctx.save();
     ctx.globalAlpha = Math.max(0.1, this.alpha);
     
-    // Soft glowing radial profile
     const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 3.5);
     grad.addColorStop(0, `hsla(${this.hue}, 100%, 75%, 1)`);
     grad.addColorStop(0.3, `hsla(${this.hue}, 100%, 70%, 0.5)`);
@@ -1094,7 +1149,6 @@ class Firefly {
   }
 }
 
-// Generate fireflies
 for (let i = 0; i < 28; i++) {
   fireflies.push(new Firefly());
 }
@@ -1146,7 +1200,7 @@ function showStep(n) {
   currentStep = n;
 }
 
-// STEP 1: Interactive Envelope Opening Animation -> Step 2
+// STEP 1: Interactive Envelope Opening Animation
 const envelopeClickable = document.getElementById('envelope-clickable');
 let envelopeOpened = false;
 
@@ -1155,10 +1209,9 @@ function openEnvelope() {
   envelopeOpened = true;
   
   if (isMuted) {
-    toggleAudio(true); // Automatically trigger ambient sound on first user action
+    toggleAudio(true); // Automatically start ambient soundscape
   }
   
-  // play a lovely bell arpeggio chime on opening
   if (!isMuted && synth.isPlaying) {
     synth.playBell(1);
     setTimeout(() => synth.playBell(3), 200);
@@ -1168,14 +1221,11 @@ function openEnvelope() {
   const wrapper = document.getElementById('envelope-clickable');
   wrapper.classList.add('opened');
   
-  // Transition background gradient
   setTimeout(() => {
     bg.style.background = 'linear-gradient(135deg, #180830 0%, #44145c 50%, #61184a 100%)';
   }, 400);
 
-  // Transition to Step 2
   setTimeout(() => {
-    // Fade out step 1 elements
     document.getElementById('step1').style.transition = 'opacity 0.8s ease';
     document.getElementById('step1').style.opacity = '0';
     
@@ -1210,7 +1260,6 @@ function startLetterTextReveal() {
     }, 1000 + i * 2200);
   });
   
-  // Advance to Step 3
   setTimeout(() => goToStep3(), 1200 + blocks.length * 2200 + 2500);
 }
 
@@ -1246,10 +1295,15 @@ function goToStep4() {
   }, 700);
 }
 
-// DYNAMIC RUNAWAY NO BUTTON LOGIC
+// DYNAMIC RUNAWAY NO BUTTON LOGIC (WITH FULL TOUCH/CLICK PROTECTION)
 const btnNo = document.getElementById('btn-no');
 
 function evadeButton(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
   btnNo.classList.add('evading');
   const pad = 60;
   
@@ -1284,25 +1338,24 @@ function evadeButton(e) {
   ];
   btnNo.innerText = runawayPhrases[Math.floor(Math.random() * runawayPhrases.length)];
   
-  // Chime a scared little bell note when evading
   if (!isMuted && synth.isPlaying) {
     synth.playBell(5);
   }
 }
 
+// Mouse/Desktop trigger bindings
 btnNo.addEventListener('mouseover', evadeButton);
 btnNo.addEventListener('pointerover', evadeButton);
-btnNo.addEventListener('touchstart', (e) => {
-  e.preventDefault();
-  evadeButton(e);
-});
+
+// Touch/Mobile trigger bindings (with explicit stop & preventDefault)
+btnNo.addEventListener('touchstart', evadeButton, { passive: false });
+btnNo.addEventListener('click', evadeButton);
 
 
 // CLICK YES BUTTON (HAPPY ENDING + MODULATION)
 document.getElementById('btn-yes').addEventListener('click', () => {
   confettiActive = true;
   
-  // Hide buttons and prompt
   document.getElementById('btn-yes').style.display = 'none';
   btnNo.style.display = 'none';
   document.getElementById('q-text').style.display = 'none';
@@ -1311,17 +1364,14 @@ document.getElementById('btn-yes').addEventListener('click', () => {
   fm.style.display = 'block';
   setTimeout(() => fm.classList.add('visible'), 100);
   
-  // DYNAMIC MUSIC RESOLUTION! Modulate to brighter D Major scale
   if (!isMuted && synth.isPlaying) {
     synth.modulateToTriumphant();
   }
   
-  // Burst huge confetti shower
   for (let i = 0; i < 220; i++) {
     setTimeout(() => confetti.push(new Confetti()), i * 12);
   }
   
-  // Flood background with beautiful glowing hearts
   for (let i = 0; i < 100; i++) {
     setTimeout(() => floaters.push(new FloatHeart(null, null, true)), i * 35);
   }
@@ -1331,7 +1381,6 @@ document.getElementById('btn-yes').addEventListener('click', () => {
 // GLOBAL CANVAS INTERACTIONS
 function handleStart(e) {
   if (currentStep === 1) {
-    // If clicked on screen but NOT on envelope, do not trigger envelope opening
     return;
   }
   
@@ -1339,7 +1388,7 @@ function handleStart(e) {
   const y = e.clientY || (e.touches && e.touches[0].clientY) || my;
   spawnTapHeart(x, y);
 
-  // Disperse fireflies near the tap location
+  // Disperse fireflies near tap
   fireflies.forEach(f => {
     const dist = Math.hypot(f.x - x, f.y - y);
     if (dist < 120) {
