@@ -4,33 +4,53 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Магия чувств</title>
+
+<!-- Import Google Fonts for elegant Cyrillic typography -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Montserrat:ital,wght@0,300..600;1,300..600&display=swap" rel="stylesheet">
+
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+  }
 
   body {
-    width: 100vw; height: 100vh; overflow: hidden;
-    font-family: Georgia, serif;
-    background: #1a0a2e;
+    width: 100vw; 
+    height: 100vh; 
+    overflow: hidden;
+    font-family: 'Lora', Georgia, serif;
+    background: #0f051d;
     cursor: none;
     user-select: none;
     -webkit-user-select: none;
   }
 
   #bg {
-    position: fixed; inset: 0; z-index: 0;
-    background: linear-gradient(135deg, #1a0a2e 0%, #2d1155 50%, #4a1942 100%);
-    transition: background 3s ease;
+    position: fixed; 
+    inset: 0; 
+    z-index: 0;
+    background: linear-gradient(135deg, #0f051d 0%, #200c3b 50%, #3a0d30 100%);
+    transition: background 3.5s cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   #canvas {
-    position: fixed; inset: 0; z-index: 1;
+    position: fixed; 
+    inset: 0; 
+    z-index: 1;
     pointer-events: none;
   }
 
   #scene {
-    position: fixed; inset: 0; z-index: 2;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
+    position: fixed; 
+    inset: 0; 
+    z-index: 2;
+    display: flex; 
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center;
     padding: 2rem;
   }
 
@@ -43,162 +63,316 @@
     width: 100%;
     max-width: 600px;
   }
-  .scene-panel.active { display: flex; }
+  .scene-panel.active { 
+    display: flex; 
+  }
 
+  /* CUSTOM PREMIUM CURSOR HINT */
   #cursor-dot {
-    position: fixed; z-index: 999;
-    width: 12px; height: 12px;
+    position: fixed; 
+    z-index: 999;
+    width: 16px; 
+    height: 16px;
     border-radius: 50%;
-    background: rgba(255,150,180,0.8);
+    background: radial-gradient(circle, rgba(255,190,210,1) 0%, rgba(255,110,160,0.8) 70%, rgba(255,80,130,0) 100%);
     pointer-events: none;
     transform: translate(-50%,-50%);
-    transition: transform 0.1s;
-    box-shadow: 0 0 8px rgba(255,100,150,0.6);
+    transition: transform 0.08s ease-out;
+    box-shadow: 0 0 20px rgba(255,100,150,0.8), 0 0 40px rgba(255,80,130,0.4);
   }
 
-  /* STEP 1 */
+  /* STEP 1: Touch to begin */
   #step1 .pulse-text {
-    font-size: clamp(1.2rem, 5vw, 2rem);
-    color: rgba(255,200,220,0.7);
+    font-size: clamp(1.4rem, 6vw, 2.4rem);
+    color: #ffebf2;
     letter-spacing: 0.15em;
+    font-family: 'Lora', Georgia, serif;
+    font-style: italic;
     animation: pulse-glow 2.5s ease-in-out infinite;
   }
+  
   @keyframes pulse-glow {
-    0%,100% { opacity: 0.5; text-shadow: 0 0 10px rgba(255,150,180,0.3); }
-    50% { opacity: 1; text-shadow: 0 0 25px rgba(255,150,180,0.8), 0 0 50px rgba(255,100,150,0.4); }
+    0%, 100% { 
+      opacity: 0.55; 
+      text-shadow: 0 0 10px rgba(255,150,180,0.3);
+      transform: scale(0.98);
+    }
+    50% { 
+      opacity: 1; 
+      text-shadow: 0 0 30px rgba(255,130,170,0.9), 0 0 60px rgba(255,90,140,0.5);
+      transform: scale(1.02);
+    }
   }
+
   #step1 .sub-hint {
-    margin-top: 1rem;
-    font-size: 0.85rem;
-    color: rgba(255,200,220,0.3);
-    letter-spacing: 0.1em;
-    animation: pulse-glow 3s ease-in-out infinite 1s;
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    font-family: 'Montserrat', sans-serif;
+    color: rgba(255,200,220,0.45);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    animation: pulse-glow-sub 3s ease-in-out infinite 0.5s;
+  }
+
+  @keyframes pulse-glow-sub {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+  }
+
+  /* PREMIUM GLASSMORPHISM LETTER CARD */
+  .letter-card {
+    background: rgba(26, 10, 46, 0.45);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 170, 200, 0.18);
+    border-radius: 28px;
+    padding: 3rem 2.5rem;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    width: 100%;
+    max-width: 540px;
+    margin: 0 auto;
+    position: relative;
+    transition: box-shadow 0.5s ease;
+  }
+  .letter-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(255,180,210,0.3) 0%, rgba(255,100,150,0.05) 50%, rgba(255,180,210,0.2) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
   }
 
   /* TEXT BLOCKS */
   .text-block {
     opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 1.2s ease, transform 1.2s ease;
-    color: rgba(255,230,240,0.95);
+    transform: translateY(20px);
+    transition: opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1), 
+                transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+    color: rgba(255, 240, 245, 0.95);
     line-height: 1.8;
-    margin: 0.6rem 0;
+    margin: 0.8rem 0;
   }
   .text-block.visible {
     opacity: 1;
     transform: translateY(0);
   }
   .text-block.big {
-    font-size: clamp(1.1rem, 4vw, 1.5rem);
+    font-size: clamp(1.1rem, 4vw, 1.45rem);
     font-style: italic;
   }
   .text-block.small {
-    font-size: clamp(0.9rem, 3vw, 1.1rem);
-    color: rgba(255,210,225,0.8);
+    font-size: clamp(0.85rem, 3vw, 1.05rem);
+    font-family: 'Montserrat', sans-serif;
+    color: rgba(255,210,225,0.7);
+    font-weight: 300;
+    letter-spacing: 0.05em;
   }
   .text-block.highlight {
-    font-size: clamp(1.3rem, 5vw, 1.9rem);
-    color: #ffcce0;
+    font-size: clamp(1.3rem, 5vw, 1.8rem);
+    color: #ffccd9;
     font-style: italic;
-    text-shadow: 0 0 20px rgba(255,100,150,0.5);
+    margin: 1.2rem 0;
+    text-shadow: 0 0 20px rgba(255,80,130,0.6);
   }
 
-  /* STEP 3 — climax */
+  /* STEP 3: Climax */
   #step3 .love-text {
-    font-size: clamp(2.5rem, 12vw, 5rem);
-    color: #ffaac8;
+    font-size: clamp(2.8rem, 13vw, 5.5rem);
+    color: #ffb8d1;
     font-style: italic;
-    text-shadow: 0 0 30px rgba(255,80,130,0.7), 0 0 60px rgba(255,80,130,0.4);
+    text-shadow: 0 0 40px rgba(255,70,120,0.85), 0 0 80px rgba(255,70,120,0.45);
     animation: love-breathe 2s ease-in-out infinite;
     opacity: 0;
-    transform: scale(0.8);
-    transition: opacity 1.5s ease, transform 1.5s ease;
+    transform: scale(0.85);
+    transition: opacity 1.8s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                transform 1.8s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   #step3 .love-text.visible {
     opacity: 1;
     transform: scale(1);
   }
   @keyframes love-breathe {
-    0%,100% { text-shadow: 0 0 30px rgba(255,80,130,0.7), 0 0 60px rgba(255,80,130,0.4); }
-    50% { text-shadow: 0 0 50px rgba(255,80,130,1), 0 0 100px rgba(255,80,130,0.6); }
+    0%, 100% { 
+      text-shadow: 0 0 35px rgba(255,70,120,0.8), 0 0 70px rgba(255,70,120,0.4);
+      transform: scale(1);
+    }
+    50% { 
+      text-shadow: 0 0 60px rgba(255,70,120,1), 0 0 120px rgba(255,70,120,0.65);
+      transform: scale(1.05);
+    }
   }
 
-  /* STEP 4 */
+  /* STEP 4: Buttons and Final Questions */
   #step4 .question {
-    font-size: clamp(1.2rem, 5vw, 1.8rem);
-    color: rgba(255,230,240,0.95);
-    margin-bottom: 2.5rem;
+    font-size: clamp(1.4rem, 6vw, 2.2rem);
+    color: #fff0f5;
+    margin-bottom: 3rem;
     font-style: italic;
     opacity: 0;
-    transition: opacity 1s ease;
+    transform: translateY(20px);
+    transition: opacity 1.2s ease, transform 1.2s ease;
   }
-  #step4 .question.visible { opacity: 1; }
+  #step4 .question.visible { 
+    opacity: 1; 
+    transform: translateY(0);
+  }
 
-  #btn-yes {
-    padding: 1rem 3rem;
-    font-size: 1.2rem;
-    font-family: Georgia, serif;
+  /* Interactive Button Container */
+  .button-group {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+    width: 100%;
+    position: relative;
+  }
+
+  /* Buttons Base */
+  .custom-btn {
+    padding: 0.9rem 2.8rem;
+    font-size: 1.1rem;
+    font-family: 'Lora', Georgia, serif;
     font-style: italic;
-    background: transparent;
-    color: #ffaac8;
-    border: 1.5px solid rgba(255,150,180,0.6);
     border-radius: 50px;
     cursor: pointer;
-    letter-spacing: 0.1em;
-    transition: all 0.3s ease;
+    letter-spacing: 0.08em;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     opacity: 0;
-    position: relative;
-    overflow: hidden;
+    transform: scale(0.9);
   }
-  #btn-yes.visible { opacity: 1; }
+  .custom-btn.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  #btn-yes {
+    background: rgba(255, 100, 150, 0.15);
+    color: #ffccd9;
+    border: 1.5px solid rgba(255,130,170,0.6);
+    box-shadow: 0 0 15px rgba(255,100,150,0.2);
+  }
   #btn-yes:hover {
-    background: rgba(255,100,150,0.2);
+    background: rgba(255,100,150,0.3);
     border-color: rgba(255,150,180,1);
-    box-shadow: 0 0 20px rgba(255,100,150,0.4);
-    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(255,100,150,0.5), 0 0 50px rgba(255,100,150,0.2);
+    transform: scale(1.06);
   }
-  #btn-yes:active { transform: scale(0.97); }
+  #btn-yes:active { 
+    transform: scale(0.97); 
+  }
+
+  #btn-no {
+    background: rgba(255, 255, 255, 0.03);
+    color: rgba(255, 220, 230, 0.6);
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+  }
+  #btn-no.evading {
+    transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+  }
 
   #final-message {
-    font-size: clamp(1.1rem, 4vw, 1.5rem);
-    color: #ffcce0;
+    font-size: clamp(1.15rem, 4.5vw, 1.6rem);
+    color: #ffccd9;
     font-style: italic;
     text-align: center;
-    line-height: 1.8;
+    line-height: 1.9;
     opacity: 0;
-    transition: opacity 1.5s ease;
+    transform: translateY(20px);
+    transition: opacity 1.5s cubic-bezier(0.25, 1, 0.5, 1), 
+                transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
     display: none;
+    margin-top: 1.5rem;
   }
-  #final-message.visible { opacity: 1; }
+  #final-message.visible { 
+    opacity: 1; 
+    transform: translateY(0);
+  }
 
-  /* AUDIO note */
+  .sender-signature {
+    display: block;
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    font-family: 'Montserrat', sans-serif;
+    color: rgba(255, 190, 210, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-style: normal;
+  }
+
+  /* PREMIUM AUDIO NOTE & TOGGLE */
   #audio-hint {
     position: fixed;
-    bottom: 1.5rem; left: 50%;
+    bottom: 2rem; 
+    left: 50%;
     transform: translateX(-50%);
-    font-size: 0.75rem;
-    color: rgba(255,200,220,0.3);
-    letter-spacing: 0.05em;
+    font-size: 0.8rem;
+    font-family: 'Montserrat', sans-serif;
+    color: rgba(255,200,220,0.4);
+    letter-spacing: 0.1em;
     z-index: 10;
-    transition: opacity 1s ease;
+    transition: opacity 1.5s ease;
+    pointer-events: none;
+    text-align: center;
   }
 
-  /* Tap ripple */
+  #audio-toggle {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(30, 15, 50, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 150, 180, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    color: #ffb8d1;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+  }
+  #audio-toggle:hover {
+    transform: scale(1.08);
+    border-color: rgba(255, 150, 180, 0.7);
+    box-shadow: 0 0 15px rgba(255, 100, 150, 0.4);
+  }
+  #audio-toggle.muted svg {
+    opacity: 0.55;
+  }
+
+  /* Tap ripples */
   .tap-heart {
     position: fixed;
     pointer-events: none;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     z-index: 100;
-    animation: tap-float 1.4s ease forwards;
+    animation: tap-float 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
   }
   @keyframes tap-float {
-    0% { opacity: 1; transform: translateY(0) scale(1); }
-    100% { opacity: 0; transform: translateY(-80px) scale(0.6); }
+    0% { 
+      opacity: 1; 
+      transform: translateY(0) scale(1) rotate(0deg); 
+    }
+    100% { 
+      opacity: 0; 
+      transform: translateY(-100px) scale(0.5) rotate(15deg); 
+    }
   }
 
-  /* Hearts canvas overlay */
   #hearts-container {
-    position: fixed; inset: 0;
+    position: fixed; 
+    inset: 0;
     pointer-events: none;
     z-index: 3;
   }
@@ -211,24 +385,38 @@
 <div id="hearts-container"></div>
 <div id="cursor-dot"></div>
 
+<!-- Sleek Glassmorphic Mute/Unmute Control -->
+<div id="audio-toggle" class="muted" title="Включить волшебную музыку">
+  <svg id="music-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Music notes path -->
+    <path d="M9 18V5l12-2v13"></path>
+    <circle cx="6" cy="18" r="3"></circle>
+    <circle cx="18" cy="16" r="3"></circle>
+    <!-- Mute cross line (visible when muted) -->
+    <line id="mute-line" x1="1" y1="23" x2="23" y2="1" stroke="currentColor" stroke-width="2.5" style="display: block;"></line>
+  </svg>
+</div>
+
 <div id="scene">
 
   <!-- STEP 1: Touch to begin -->
   <div class="scene-panel active" id="step1">
     <p class="pulse-text">✦ Прикоснись к экрану ✦</p>
-    <p class="sub-hint">у меня есть кое-что для тебя</p>
+    <p class="sub-hint" id="step1-sub">у меня есть кое-что для тебя</p>
   </div>
 
   <!-- STEP 2: The letter -->
   <div class="scene-panel" id="step2">
-    <div class="text-block big" id="t1">Знаешь, я долго думал,</div>
-    <div class="text-block small" id="t2">как это сказать тебе...</div>
-    <div class="text-block big" id="t3">Есть слова, которые сложно произнести вслух,</div>
-    <div class="text-block small" id="t4">но они живут внутри и просятся наружу.</div>
-    <div class="text-block highlight" id="t5">«Ты — лучшее, что со мной случилось»</div>
-    <div class="text-block small" id="t6">Это правда, без единого преувеличения.</div>
-    <div class="text-block big" id="t7">Рядом с тобой мир становится светлее,</div>
-    <div class="text-block small" id="t8">а каждый день — немного особенным.</div>
+    <div class="letter-card">
+      <div class="text-block big" id="t1">Знаешь, я долго думал,</div>
+      <div class="text-block small" id="t2">как это сказать тебе...</div>
+      <div class="text-block big" id="t3">Есть слова, которые сложно произнести вслух,</div>
+      <div class="text-block small" id="t4">но они живут внутри и просятся наружу.</div>
+      <div class="text-block highlight" id="t5">«Ты — лучшее, что со мной случилось»</div>
+      <div class="text-block small" id="t6">Это правда, без единого преувеличения.</div>
+      <div class="text-block big" id="t7">Рядом с тобой мир становится светлее,</div>
+      <div class="text-block small" id="t8">а каждый день — немного особенным.</div>
+    </div>
   </div>
 
   <!-- STEP 3: Climax -->
@@ -239,13 +427,18 @@
   <!-- STEP 4: Final question -->
   <div class="scene-panel" id="step4">
     <p class="question" id="q-text">Улыбнулась? 🌙</p>
-    <button id="btn-yes">Да, конечно ✦</button>
-    <p id="final-message">
-      Я так и знал 🌸<br>
-      Ты — моя любимая девочка.<br>
-      Пусть этот день будет таким же тёплым,<br>
-      как то, что я чувствую к тебе.
-    </p>
+    <div class="button-group">
+      <button id="btn-yes" class="custom-btn">Да, конечно ✦</button>
+      <button id="btn-no" class="custom-btn">Нет 🥺</button>
+    </div>
+    <div id="final-message">
+      <div id="final-body">
+        Я так и знал 🌸<br>
+        Ты — моя любимая девочка.<br>
+        Пусть этот день будет таким же тёплым,<br>
+        как то, что я чувствую к тебе.
+      </div>
+    </div>
   </div>
 
 </div>
@@ -253,6 +446,249 @@
 <p id="audio-hint">♪ включи звук для полного погружения</p>
 
 <script>
+// --- URL QUERY PERSONALIZATION SYSTEM ---
+const urlParams = new URLSearchParams(window.location.search);
+const paramTo = urlParams.get('to');
+const paramFrom = urlParams.get('from');
+
+// Apply customization
+if (paramTo) {
+  const cleanTo = escapeHTML(paramTo);
+  document.getElementById('step1-sub').innerHTML = `${cleanTo}, у меня есть кое-что для тебя`;
+  
+  // Custom final text
+  const signature = paramFrom ? `<span class="sender-signature">С любовью, ${escapeHTML(paramFrom)} ✨</span>` : '';
+  document.getElementById('final-body').innerHTML = `
+    Я так и знал 🌸<br>
+    Ты — моя любимая ${cleanTo}.<br>
+    Пусть этот день будет таким же тёплым,<br>
+    как то, что я чувствую к тебе.
+    ${signature}
+  `;
+} else if (paramFrom) {
+  // If only "from" is present
+  document.getElementById('final-body').innerHTML = `
+    Я так и знал 🌸<br>
+    Ты — моя любимая девочка.<br>
+    Пусть этот день будет таким же тёплым,<br>
+    как то, что я чувствую к тебе.
+    <span class="sender-signature">С любовью, ${escapeHTML(paramFrom)} ✨</span>
+  `;
+}
+
+function escapeHTML(str) {
+  return str.replace(/[&<>'"]/g, 
+    tag => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    }[tag] || tag)
+  );
+}
+
+
+// --- PROCEDURAL AUDIO WEB AUDIO API SYNTHESIZER ---
+class RomanticSynth {
+  constructor() {
+    this.ctx = null;
+    this.masterGain = null;
+    this.delayNode = null;
+    this.filterNode = null;
+    this.isPlaying = false;
+    this.chordInterval = null;
+    
+    // Romantic chords (frequency lists)
+    // Cmaj7 (C3, E3, G3, B3, E4), Fmaj7 (F3, A3, C4, E4, G4), Am9 (A3, C4, E4, G4, B4), G6 (G3, B3, D4, G4, B4)
+    this.chords = [
+      [130.81, 164.81, 196.00, 246.94, 329.63], // Cmaj7
+      [174.61, 220.00, 261.63, 329.63, 392.00], // Fmaj7
+      [220.00, 261.63, 329.63, 392.00, 493.88], // Am9
+      [196.00, 246.94, 293.66, 392.00, 493.88]  // G6
+    ];
+    this.currentChordIndex = 0;
+  }
+
+  init() {
+    if (this.ctx) return;
+    
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    this.ctx = new AudioContextClass();
+    
+    // Master Gain for smooth volume control
+    this.masterGain = this.ctx.createGain();
+    this.masterGain.gain.setValueAtTime(0, this.ctx.currentTime); // start silent
+    
+    // Low pass filter for soft sound
+    this.filterNode = this.ctx.createBiquadFilter();
+    this.filterNode.type = 'lowpass';
+    this.filterNode.frequency.setValueAtTime(750, this.ctx.currentTime);
+    this.filterNode.Q.setValueAtTime(1, this.ctx.currentTime);
+    
+    // Ambient feedback delay effect
+    this.delayNode = this.ctx.createDelay(2.0);
+    this.delayNode.delayTime.setValueAtTime(0.6, this.ctx.currentTime);
+    
+    const delayFeedback = this.ctx.createGain();
+    delayFeedback.gain.setValueAtTime(0.42, this.ctx.currentTime);
+    
+    const delayWet = this.ctx.createGain();
+    delayWet.gain.setValueAtTime(0.35, this.ctx.currentTime);
+    
+    // Connections
+    // Synth Voice -> Filter -> Master Gain -> Destination
+    //               Filter -> Delay -> delayWet -> Master Gain
+    //                         Delay -> delayFeedback -> Delay (Loop)
+    this.filterNode.connect(this.masterGain);
+    
+    this.filterNode.connect(this.delayNode);
+    this.delayNode.connect(delayFeedback);
+    delayFeedback.connect(this.delayNode);
+    
+    this.delayNode.connect(delayWet);
+    delayWet.connect(this.masterGain);
+    
+    this.masterGain.connect(this.ctx.destination);
+  }
+
+  start() {
+    this.init();
+    if (this.isPlaying) return;
+    
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+    
+    this.isPlaying = true;
+    
+    // Fade in master volume
+    this.masterGain.gain.linearRampToValueAtTime(0.45, this.ctx.currentTime + 2.5);
+    
+    // Start automated chord generation
+    this.playNextChord();
+    this.chordInterval = setInterval(() => {
+      this.currentChordIndex = (this.currentChordIndex + 1) % this.chords.length;
+      this.playNextChord();
+    }, 4500);
+  }
+
+  stop() {
+    if (!this.isPlaying) return;
+    this.isPlaying = false;
+    clearInterval(this.chordInterval);
+    
+    if (this.masterGain) {
+      this.masterGain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 1.2);
+    }
+  }
+
+  // Plays deep ambient pad chords
+  playNextChord() {
+    if (!this.isPlaying || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    const freqs = this.chords[this.currentChordIndex];
+    
+    freqs.forEach((freq, index) => {
+      // Create oscillator
+      const osc = this.ctx.createOscillator();
+      const gainNode = this.ctx.createGain();
+      
+      // Warm triangle sound
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now);
+      
+      // Gentle attack and release envelope
+      gainNode.gain.setValueAtTime(0, now);
+      // Soft staggered attack
+      gainNode.gain.linearRampToValueAtTime(0.08 / freqs.length, now + 1.5 + (index * 0.2));
+      gainNode.gain.setValueAtTime(0.08 / freqs.length, now + 3.2);
+      // Decay before next chord
+      gainNode.gain.linearRampToValueAtTime(0, now + 4.5);
+      
+      osc.connect(gainNode);
+      gainNode.connect(this.filterNode);
+      
+      osc.start(now);
+      osc.stop(now + 4.6);
+    });
+  }
+
+  // Dynamic high-pitch crystal bells on user interaction
+  playBell(scaleIndex) {
+    if (!this.ctx || this.ctx.state === 'suspended' || !this.isPlaying) return;
+    const now = this.ctx.currentTime;
+    
+    // Select a note frequency based on current chord
+    const baseChord = this.chords[this.currentChordIndex];
+    const baseFreq = baseChord[scaleIndex % baseChord.length];
+    
+    // Transpose up to octave 5 or 6 for a shimmering bell sound
+    const bellFreq = baseFreq * 4; 
+    
+    const osc1 = this.ctx.createOscillator();
+    const osc2 = this.ctx.createOscillator();
+    const gainNode = this.ctx.createGain();
+    
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(bellFreq, now);
+    
+    // Add a slight detune layer for rich chorusing
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(bellFreq + 3, now);
+    
+    gainNode.gain.setValueAtTime(0, now);
+    gainNode.gain.linearRampToValueAtTime(0.035, now + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 1.8);
+    
+    osc1.connect(gainNode);
+    osc2.connect(gainNode);
+    
+    // Route bells directly to the master filter
+    gainNode.connect(this.filterNode);
+    
+    osc1.start(now);
+    osc2.start(now);
+    
+    osc1.stop(now + 1.9);
+    osc2.stop(now + 1.9);
+  }
+}
+
+const synth = new RomanticSynth();
+let isMuted = true;
+
+// Mute toggle element
+const audioToggle = document.getElementById('audio-toggle');
+const muteLine = document.getElementById('mute-line');
+
+function toggleAudio(forceStart = false) {
+  if (forceStart) {
+    isMuted = false;
+    audioToggle.classList.remove('muted');
+    muteLine.style.display = 'none';
+    synth.start();
+  } else {
+    isMuted = !isMuted;
+    if (isMuted) {
+      audioToggle.classList.add('muted');
+      muteLine.style.display = 'block';
+      synth.stop();
+    } else {
+      audioToggle.classList.remove('muted');
+      muteLine.style.display = 'none';
+      synth.start();
+    }
+  }
+}
+
+audioToggle.addEventListener('click', (e) => {
+  e.stopPropagation(); // prevent triggering touch events below
+  toggleAudio();
+});
+
+
+// --- GRAPHICS & CANVAS RENDERING ---
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const bg = document.getElementById('bg');
@@ -271,29 +707,36 @@ window.addEventListener('resize', resize);
 const trail = [];
 class TrailParticle {
   constructor(x, y) {
-    this.x = x; this.y = y;
+    this.x = x; 
+    this.y = y;
     this.life = 1;
-    this.decay = 0.025 + Math.random() * 0.02;
-    this.size = 6 + Math.random() * 8;
-    this.vx = (Math.random() - 0.5) * 1.5;
-    this.vy = -0.5 - Math.random() * 1.5;
-    this.type = Math.random() < 0.6 ? 'heart' : 'star';
-    this.hue = 330 + Math.random() * 40;
+    this.decay = 0.015 + Math.random() * 0.015;
+    this.size = 8 + Math.random() * 10;
+    this.vx = (Math.random() - 0.5) * 2;
+    this.vy = -0.6 - Math.random() * 1.8;
+    this.type = Math.random() < 0.55 ? 'heart' : 'star';
+    this.hue = 330 + Math.random() * 45;
+    this.rotation = Math.random() * Math.PI * 2;
+    this.rotationSpeed = (Math.random() - 0.5) * 0.05;
   }
   update() {
     this.x += this.vx;
     this.y += this.vy;
+    this.rotation += this.rotationSpeed;
     this.life -= this.decay;
   }
   draw() {
     ctx.save();
-    ctx.globalAlpha = this.life * 0.9;
-    ctx.fillStyle = `hsl(${this.hue}, 90%, 75%)`;
+    ctx.globalAlpha = this.life * 0.95;
+    ctx.fillStyle = `hsl(${this.hue}, 95%, 78%)`;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = `hsl(${this.hue}, 95%, 70%)`;
     ctx.translate(this.x, this.y);
+    ctx.rotate(this.rotation);
     if (this.type === 'heart') {
       drawHeart(ctx, 0, 0, this.size * this.life);
     } else {
-      drawStar(ctx, 0, 0, this.size * 0.6 * this.life);
+      drawStar(ctx, 0, 0, this.size * 0.7 * this.life);
     }
     ctx.restore();
   }
@@ -301,11 +744,11 @@ class TrailParticle {
 
 function drawHeart(c, x, y, r) {
   c.beginPath();
-  c.moveTo(x, y + r * 0.3);
-  c.bezierCurveTo(x, y - r * 0.4, x - r, y - r * 0.4, x - r, y + r * 0.1);
-  c.bezierCurveTo(x - r, y + r * 0.6, x, y + r * 1.1, x, y + r * 1.3);
-  c.bezierCurveTo(x, y + r * 1.1, x + r, y + r * 0.6, x + r, y + r * 0.1);
-  c.bezierCurveTo(x + r, y - r * 0.4, x, y - r * 0.4, x, y + r * 0.3);
+  c.moveTo(x, y + r * 0.35);
+  c.bezierCurveTo(x, y - r * 0.45, x - r, y - r * 0.45, x - r, y + r * 0.1);
+  c.bezierCurveTo(x - r, y + r * 0.65, x, y + r * 1.15, x, y + r * 1.35);
+  c.bezierCurveTo(x, y + r * 1.15, x + r, y + r * 0.65, x + r, y + r * 0.1);
+  c.bezierCurveTo(x + r, y - r * 0.45, x, y - r * 0.45, x, y + r * 0.35);
   c.fill();
 }
 
@@ -316,57 +759,83 @@ function drawStar(c, x, y, r) {
     const ang2 = ang + 2 * Math.PI / 5;
     if (i === 0) c.moveTo(x + Math.cos(ang) * r, y + Math.sin(ang) * r);
     else c.lineTo(x + Math.cos(ang) * r, y + Math.sin(ang) * r);
-    c.lineTo(x + Math.cos(ang2) * r * 0.4, y + Math.sin(ang2) * r * 0.4);
+    c.lineTo(x + Math.cos(ang2) * r * 0.35, y + Math.sin(ang2) * r * 0.35);
   }
   c.closePath();
   c.fill();
 }
 
-let mx = -100, my = -100, isMoving = false, moveTimer;
+let mx = -100, my = -100, isMoving = false;
+let bellCooldown = 0;
 
 function onMove(x, y) {
   mx = x; my = y;
+  
+  // Custom premium cursor tracking
   cursorDot.style.left = x + 'px';
   cursorDot.style.top = y + 'px';
-  if (!isMoving) return;
-  for (let i = 0; i < 2; i++) {
-    trail.push(new TrailParticle(x + (Math.random()-0.5)*10, y + (Math.random()-0.5)*10));
+  cursorDot.style.transform = 'translate(-50%,-50%) scale(1.15)';
+  
+  // Create beautiful cursor particles
+  if (isMoving) {
+    for (let i = 0; i < 2; i++) {
+      trail.push(new TrailParticle(x + (Math.random()-0.5)*15, y + (Math.random()-0.5)*15));
+    }
+  }
+
+  // Play ambient crystal bell sounds as the user interacts with the canvas
+  if (!isMuted && synth.isPlaying && bellCooldown <= 0) {
+    const scaleIndex = Math.floor((x / W) * 8);
+    synth.playBell(scaleIndex);
+    bellCooldown = 15; // Cooldown frames to prevent overcrowding
   }
 }
 
-document.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
+// Touch/Mouse triggers
+document.addEventListener('mousemove', e => {
+  onMove(e.clientX, e.clientY);
+});
 document.addEventListener('touchmove', e => {
-  e.preventDefault();
   const t = e.touches[0];
   onMove(t.clientX, t.clientY);
-}, { passive: false });
+}, { passive: true });
 
-// Floating hearts system
+// Reset cursor on mouse leave
+document.addEventListener('mouseleave', () => {
+  cursorDot.style.transform = 'translate(-50%,-50%) scale(0)';
+});
+
+
+// Floating hearts system (Step 3 flood and Step 4 background)
 const floaters = [];
 class FloatHeart {
   constructor(x, y, big) {
     this.x = x || Math.random() * W;
-    this.y = y || H + 20;
-    this.size = big ? (15 + Math.random() * 25) : (5 + Math.random() * 12);
-    this.vx = (Math.random() - 0.5) * 1.2;
-    this.vy = -(0.8 + Math.random() * 1.5);
+    this.y = y || H + 25;
+    this.size = big ? (16 + Math.random() * 24) : (6 + Math.random() * 12);
+    this.vx = (Math.random() - 0.5) * 1.3;
+    this.vy = -(0.9 + Math.random() * 1.6);
     this.life = 1;
-    this.decay = 0.004 + Math.random() * 0.004;
+    this.decay = 0.003 + Math.random() * 0.004;
     this.wobble = Math.random() * Math.PI * 2;
-    this.wobbleSpeed = 0.03 + Math.random() * 0.02;
-    this.hue = 340 + Math.random() * 30;
-    this.sat = 70 + Math.random() * 30;
+    this.wobbleSpeed = 0.02 + Math.random() * 0.02;
+    this.hue = 335 + Math.random() * 35;
+    this.sat = 75 + Math.random() * 25;
+    this.blur = Math.random() < 0.25 ? 2 : 0; // multi-depth layer
   }
   update() {
     this.wobble += this.wobbleSpeed;
-    this.x += this.vx + Math.sin(this.wobble) * 0.4;
+    this.x += this.vx + Math.sin(this.wobble) * 0.45;
     this.y += this.vy;
     this.life -= this.decay;
   }
   draw() {
     ctx.save();
     ctx.globalAlpha = this.life * 0.85;
-    ctx.fillStyle = `hsl(${this.hue}, ${this.sat}%, 72%)`;
+    if (this.blur > 0) {
+      ctx.filter = `blur(${this.blur}px)`;
+    }
+    ctx.fillStyle = `hsl(${this.hue}, ${this.sat}%, 74%)`;
     ctx.translate(this.x, this.y);
     drawHeart(ctx, 0, 0, this.size);
     ctx.restore();
@@ -381,126 +850,209 @@ const confetti = [];
 class Confetti {
   constructor() {
     this.x = Math.random() * W;
-    this.y = -10;
-    this.vx = (Math.random() - 0.5) * 4;
-    this.vy = 3 + Math.random() * 4;
+    this.y = -15;
+    this.vx = (Math.random() - 0.5) * 4.5;
+    this.vy = 3.5 + Math.random() * 4.5;
     this.rot = Math.random() * Math.PI * 2;
-    this.rotV = (Math.random() - 0.5) * 0.15;
-    this.size = 6 + Math.random() * 8;
-    this.color = ['#ffaacc','#ffcc88','#88ccff','#ccaaff','#ffddaa','#ff88aa'][Math.floor(Math.random()*6)];
-    this.shape = Math.random() < 0.5 ? 'rect' : 'heart';
+    this.rotV = (Math.random() - 0.5) * 0.18;
+    this.size = 7 + Math.random() * 9;
+    this.color = ['#ffccd9','#ffb3d9','#b3d9ff','#ccb3ff','#ffe6b3','#ff99bb'][Math.floor(Math.random()*6)];
+    this.shape = Math.random() < 0.55 ? 'rect' : 'heart';
     this.life = 1;
   }
   update() {
     this.x += this.vx;
     this.y += this.vy;
     this.rot += this.rotV;
-    this.vx *= 0.99;
-    if (this.y > H + 20) this.life = 0;
+    this.vx *= 0.985;
+    if (this.y > H + 25) this.life = 0;
   }
   draw() {
     ctx.save();
-    ctx.globalAlpha = 0.9;
+    ctx.globalAlpha = 0.92;
     ctx.fillStyle = this.color;
     ctx.translate(this.x, this.y);
     ctx.rotate(this.rot);
     if (this.shape === 'rect') {
       ctx.fillRect(-this.size/2, -this.size/4, this.size, this.size/2);
     } else {
-      drawHeart(ctx, 0, 0, this.size * 0.6);
+      drawHeart(ctx, 0, 0, this.size * 0.65);
     }
     ctx.restore();
   }
 }
 
-// Step machine
+// Scene/Step switcher
 function showStep(n) {
   document.querySelectorAll('.scene-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('step' + n).classList.add('active');
   currentStep = n;
 }
 
-// Step 1 → 2
+// STEP 1 → 2 transition
 function startLetter() {
   isMoving = true;
-  bg.style.background = 'linear-gradient(135deg, #2d0a4e 0%, #5a1a7a 50%, #7a2060 100%)';
+  
+  // Try to play audio automatically on first interaction
+  if (isMuted) {
+    toggleAudio(true); // force start ambient soundscape
+  }
+  
+  // Transition background gradient
+  bg.style.background = 'linear-gradient(135deg, #180830 0%, #44145c 50%, #61184a 100%)';
   showStep(2);
-  // Reveal texts one by one
+  
+  // Staggered fade in of the letter blocks
   const blocks = document.querySelectorAll('#step2 .text-block');
   blocks.forEach((b, i) => {
     setTimeout(() => {
       b.classList.add('visible');
-      // Burst hearts on highlight
+      // Spark heart burst on the special highlight block
       if (b.classList.contains('highlight')) {
-        for (let k = 0; k < 12; k++) {
+        for (let k = 0; k < 15; k++) {
           setTimeout(() => {
             const r = document.querySelector('.highlight');
             if (r) {
               const rect = r.getBoundingClientRect();
               floaters.push(new FloatHeart(rect.left + Math.random()*rect.width, rect.top));
             }
-          }, k * 80);
+          }, k * 90);
         }
       }
-    }, 800 + i * 1800);
+    }, 1000 + i * 2200);
   });
-  // Auto advance to step 3
-  setTimeout(() => goToStep3(), 800 + blocks.length * 1800 + 2000);
+  
+  // Advance to Step 3 climax (timer matches text display)
+  setTimeout(() => goToStep3(), 1200 + blocks.length * 2200 + 2500);
 }
 
+// STEP 2 → 3 Climax
 function goToStep3() {
   floatingActive = true;
-  bg.style.background = 'linear-gradient(135deg, #3d0a2e 0%, #6a1050 50%, #4a0a3a 100%)';
+  bg.style.background = 'linear-gradient(135deg, #2b0622 0%, #520b3e 50%, #300525 100%)';
   showStep(3);
+  
   setTimeout(() => {
     document.getElementById('love-words').classList.add('visible');
-    // Launch heart flood
-    for (let i = 0; i < 60; i++) {
+    // Launch a dense, breathtaking wave of floating hearts
+    for (let i = 0; i < 75; i++) {
       setTimeout(() => {
         floaters.push(new FloatHeart(null, null, true));
-      }, i * 60);
+      }, i * 50);
     }
   }, 400);
-  setTimeout(() => goToStep4(), 5500);
+  
+  setTimeout(() => goToStep4(), 6200);
 }
 
+// STEP 3 → 4 Final Interaction Screen
 function goToStep4() {
   floatingActive = false;
   showStep(4);
+  
   setTimeout(() => {
     document.getElementById('q-text').classList.add('visible');
     setTimeout(() => {
       document.getElementById('btn-yes').classList.add('visible');
-    }, 800);
-  }, 600);
+      document.getElementById('btn-no').classList.add('visible');
+    }, 900);
+  }, 700);
 }
 
-// TAP YES
+// DYNAMIC RUNAWAY NO BUTTON LOGIC
+const btnNo = document.getElementById('btn-no');
+
+function evadeButton(e) {
+  // Add class for faster custom transitions
+  btnNo.classList.add('evading');
+  
+  const pad = 60; // safe padding from viewport border
+  
+  // Calculate a random location far enough from current mouse/finger position
+  let newX = pad + Math.random() * (window.innerWidth - btnNo.offsetWidth - pad * 2);
+  let newY = pad + Math.random() * (window.innerHeight - btnNo.offsetHeight - pad * 2);
+  
+  // Avoid placing under the cursor if possible
+  const cursorX = e.clientX || (e.touches && e.touches[0].clientX) || mx;
+  const cursorY = e.clientY || (e.touches && e.touches[0].clientY) || my;
+  
+  const dist = Math.hypot(newX - cursorX, newY - cursorY);
+  if (dist < 150) {
+    // Recalculate opposite quadrant
+    newX = cursorX > window.innerWidth / 2 ? pad : window.innerWidth - btnNo.offsetWidth - pad;
+    newY = cursorY > window.innerHeight / 2 ? pad : window.innerHeight - btnNo.offsetHeight - pad;
+  }
+  
+  // Apply position
+  btnNo.style.position = 'fixed';
+  btnNo.style.left = `${newX}px`;
+  btnNo.style.top = `${newY}px`;
+  btnNo.style.zIndex = '9999';
+  
+  // Dynamic cute messages
+  const runawayPhrases = [
+    "Нет 🥺", 
+    "Мимо! 😜", 
+    "Подумай еще! 💫", 
+    "Неа! 🙈", 
+    "Серьезно? 🧐", 
+    "Ой, не туда! 🎯", 
+    "Почему? 😭", 
+    "Все равно люблю 💖", 
+    "Не поймаешь! 🌪️",
+    "Давай «Да»! 🌸"
+  ];
+  btnNo.innerText = runawayPhrases[Math.floor(Math.random() * runawayPhrases.length)];
+  
+  // Synthesize a quick playful high tone when evading
+  if (!isMuted && synth.isPlaying) {
+    synth.playBell(4); // Sparkle note
+  }
+}
+
+// Mouse and touch listener bindings for evasion
+btnNo.addEventListener('mouseover', evadeButton);
+btnNo.addEventListener('pointerover', evadeButton);
+btnNo.addEventListener('touchstart', (e) => {
+  e.preventDefault(); // prevent click behavior on touch
+  evadeButton(e);
+});
+
+
+// CLICK YES BUTTON (HAPPY ENDING)
 document.getElementById('btn-yes').addEventListener('click', () => {
   confettiActive = true;
+  
+  // Hide buttons and prompt
   document.getElementById('btn-yes').style.display = 'none';
+  btnNo.style.display = 'none';
   document.getElementById('q-text').style.display = 'none';
+  
   const fm = document.getElementById('final-message');
   fm.style.display = 'block';
   setTimeout(() => fm.classList.add('visible'), 100);
-  // Burst confetti
-  for (let i = 0; i < 200; i++) {
-    setTimeout(() => confetti.push(new Confetti()), i * 15);
+  
+  // Burst huge confetti shower
+  for (let i = 0; i < 220; i++) {
+    setTimeout(() => confetti.push(new Confetti()), i * 12);
   }
-  // Also flood hearts
-  for (let i = 0; i < 80; i++) {
-    setTimeout(() => floaters.push(new FloatHeart(null, null, true)), i * 40);
+  
+  // Flood background with beautiful glowing hearts
+  for (let i = 0; i < 100; i++) {
+    setTimeout(() => floaters.push(new FloatHeart(null, null, true)), i * 35);
   }
 });
 
-// Touch/click to start
+
+// INITIAL USER CLICK INITIATES THE FLOW
 function handleStart(e) {
   if (currentStep === 1) {
     e.preventDefault();
     startLetter();
     return;
   }
-  // Tap heart effect on any step
+  
+  // On all other steps, a tap triggers floating hearts & custom bells
   const x = e.clientX || (e.touches && e.touches[0].clientX) || mx;
   const y = e.clientY || (e.touches && e.touches[0].clientY) || my;
   spawnTapHeart(x, y);
@@ -509,91 +1061,106 @@ function handleStart(e) {
 document.addEventListener('click', handleStart);
 document.addEventListener('touchstart', e => {
   const t = e.touches[0];
-  handleStart({ clientX: t.clientX, clientY: t.clientY, preventDefault: () => e.preventDefault() });
+  handleStart({ 
+    clientX: t.clientX, 
+    clientY: t.clientY, 
+    preventDefault: () => e.preventDefault() 
+  });
 }, { passive: false });
 
 function spawnTapHeart(x, y) {
   const el = document.createElement('div');
   el.className = 'tap-heart';
-  el.textContent = ['💗','💖','💝','💕','🌸','✨'][Math.floor(Math.random()*6)];
+  el.textContent = ['💗','💖','💝','💕','🌸','✨','🔮','🕊️'][Math.floor(Math.random()*8)];
   el.style.left = (x - 12) + 'px';
   el.style.top = (y - 12) + 'px';
   heartsContainer.appendChild(el);
-  setTimeout(() => el.remove(), 1400);
+  setTimeout(() => el.remove(), 1500);
 }
 
-// BG breathing
-let bgHue = 0;
-function breatheBg() {
-  bgHue = (bgHue + 0.3) % 360;
-  if (currentStep > 1) {
-    const shift = Math.sin(bgHue * Math.PI / 180) * 10;
-  }
-}
 
-// Main loop
-let floatTimer = 0;
+// --- MAIN LOOP ---
 function loop() {
   ctx.clearRect(0, 0, W, H);
+  
+  // Cooldown timers
+  if (bellCooldown > 0) bellCooldown--;
 
-  // Trail
+  // Cursor trail update & render
   for (let i = trail.length - 1; i >= 0; i--) {
     trail[i].update();
     trail[i].draw();
     if (trail[i].life <= 0) trail.splice(i, 1);
   }
 
-  // Floaters
+  // Floating background hearts update & render
   for (let i = floaters.length - 1; i >= 0; i--) {
     floaters[i].update();
     floaters[i].draw();
     if (floaters[i].life <= 0 || floaters[i].y < -30) floaters.splice(i, 1);
   }
 
-  // Auto spawn floaters when active
+  // Auto spawn background drift hearts
   if (floatingActive || currentStep === 4) {
-    floatTimer++;
-    if (floatTimer % 8 === 0) {
+    if (Math.random() < 0.15) {
       floaters.push(new FloatHeart());
     }
   }
 
-  // Confetti
+  // Falling Confetti update & render
   for (let i = confetti.length - 1; i >= 0; i--) {
     confetti[i].update();
     confetti[i].draw();
     if (confetti[i].life <= 0) confetti.splice(i, 1);
   }
 
-  breatheBg();
   requestAnimationFrame(loop);
 }
 loop();
 
-// Stars background
+
+// --- PARALLAX STARS BACKGROUND LAYER ---
 function drawStarsBg() {
   const starCanvas = document.createElement('canvas');
-  starCanvas.style.cssText = 'position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.4';
+  starCanvas.style.cssText = 'position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.45';
   starCanvas.width = window.innerWidth;
   starCanvas.height = window.innerHeight;
   const sc = starCanvas.getContext('2d');
-  for (let i = 0; i < 120; i++) {
+  
+  for (let i = 0; i < 140; i++) {
     const x = Math.random() * starCanvas.width;
     const y = Math.random() * starCanvas.height;
-    const r = Math.random() * 1.5;
+    const r = Math.random() * 1.6;
     sc.beginPath();
     sc.arc(x, y, r, 0, Math.PI * 2);
-    sc.fillStyle = `rgba(255,220,240,${0.3 + Math.random() * 0.7})`;
+    sc.fillStyle = `rgba(255, 230, 245, ${0.35 + Math.random() * 0.65})`;
     sc.fill();
   }
   document.body.insertBefore(starCanvas, document.body.firstChild);
+  
+  // Re-render stars on resize
+  window.addEventListener('resize', () => {
+    starCanvas.width = window.innerWidth;
+    starCanvas.height = window.innerHeight;
+    sc.clearRect(0, 0, starCanvas.width, starCanvas.height);
+    for (let i = 0; i < 140; i++) {
+      const x = Math.random() * starCanvas.width;
+      const y = Math.random() * starCanvas.height;
+      const r = Math.random() * 1.6;
+      sc.beginPath();
+      sc.arc(x, y, r, 0, Math.PI * 2);
+      sc.fillStyle = `rgba(255, 230, 245, ${0.35 + Math.random() * 0.65})`;
+      sc.fill();
+    }
+  });
 }
 drawStarsBg();
 
-// Twinkle the audio hint
+// Twinkle / hide the audio hint text after 9 seconds
 setTimeout(() => {
-  document.getElementById('audio-hint').style.opacity = '0';
-}, 8000);
+  const audioHint = document.getElementById('audio-hint');
+  if (audioHint) audioHint.style.opacity = '0';
+}, 9000);
 </script>
 </body>
 </html>
