@@ -825,7 +825,7 @@ class RomanticSynth {
     
     const baseChord = this.chords[this.currentChordIndex];
     const baseFreq = baseChord[scaleIndex % baseChord.length];
-    const bellFreq = baseFreq * 4; // Transpose to high crystal register
+    const bellFreq = baseFreq * 4; // Transpose to high register
     
     const osc1 = this.ctx.createOscillator();
     const osc2 = this.ctx.createOscillator();
@@ -852,7 +852,6 @@ class RomanticSynth {
     osc2.stop(now + 2.1);
   }
 
-  // Modulates the synthesizer to a triumphant D Major / B Minor key
   modulateToTriumphant() {
     if (!this.isPlaying) return;
 
@@ -874,7 +873,6 @@ class RomanticSynth {
       this.playNextChord();
     }, this.tempo);
     
-    // Play gorgeous celebratory bells arpeggio cascade
     const bellPitches = [0, 2, 4, 3, 7];
     bellPitches.forEach((pIndex, step) => {
       setTimeout(() => {
@@ -931,14 +929,52 @@ function resize() {
 resize();
 window.addEventListener('resize', resize);
 
-// Trail particles
+// DYNAMIC PERFORMANCE DETECTION (UA Profiling)
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+
+// Dynamic performance ceilings
+const maxFireflies = isMobile ? 15 : 28;
+const maxConfetti = isMobile ? 85 : 220;
+const maxHeartWave = isMobile ? 32 : 75;
+const heartSpawnRate = isMobile ? 0.08 : 0.15;
+const maxTrailParticles = isMobile ? 12 : 45; // limit drag trails on mobile
+
+// HIGH PERFORMANCE OFFSCREEN CANVAS CACHING FOR GLOWS
+const glowCacheGold = document.createElement('canvas');
+glowCacheGold.width = 40;
+glowCacheGold.height = 40;
+const gcGold = glowCacheGold.getContext('2d');
+const gradGold = gcGold.createRadialGradient(20, 20, 0, 20, 20, 20);
+gradGold.addColorStop(0, 'rgba(255, 235, 170, 1)');
+gradGold.addColorStop(0.25, 'rgba(255, 200, 100, 0.45)');
+gradGold.addColorStop(1, 'rgba(255, 200, 100, 0)');
+gcGold.fillStyle = gradGold;
+gcGold.beginPath();
+gcGold.arc(20, 20, 20, 0, Math.PI * 2);
+gcGold.fill();
+
+const glowCachePink = document.createElement('canvas');
+glowCachePink.width = 40;
+glowCachePink.height = 40;
+const gcPink = glowCachePink.getContext('2d');
+const gradPink = gcPink.createRadialGradient(20, 20, 0, 20, 20, 20);
+gradPink.addColorStop(0, 'rgba(255, 185, 215, 1)');
+gradPink.addColorStop(0.25, 'rgba(255, 120, 170, 0.45)');
+gradPink.addColorStop(1, 'rgba(255, 120, 170, 0)');
+gcPink.fillStyle = gradPink;
+gcPink.beginPath();
+gcPink.arc(20, 20, 20, 0, Math.PI * 2);
+gcPink.fill();
+
+
+// Trail particles (removed expensive shadowBlur Gaussian filters for mobile)
 const trail = [];
 class TrailParticle {
   constructor(x, y) {
     this.x = x; 
     this.y = y;
     this.life = 1;
-    this.decay = 0.015 + Math.random() * 0.015;
+    this.decay = 0.016 + Math.random() * 0.018;
     this.size = 8 + Math.random() * 10;
     this.vx = (Math.random() - 0.5) * 2;
     this.vy = -0.6 - Math.random() * 1.8;
@@ -957,8 +993,6 @@ class TrailParticle {
     ctx.save();
     ctx.globalAlpha = this.life * 0.95;
     ctx.fillStyle = `hsl(${this.hue}, 95%, 78%)`;
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = `hsl(${this.hue}, 95%, 70%)`;
     ctx.translate(this.x, this.y);
     ctx.rotate(this.rotation);
     if (this.type === 'heart') {
@@ -998,21 +1032,19 @@ let mouseSpeed = 0, lastMx = -100, lastMy = -100;
 let bellCooldown = 0;
 
 function onMove(x, y) {
-  // Speed calculation
   mouseSpeed = Math.hypot(x - lastMx, y - lastMy);
   lastMx = x; lastMy = y;
   
   mx = x; my = y;
   
-  // Custom premium cursor tracking (updates element for desktop only)
   if (cursorDot) {
     cursorDot.style.left = x + 'px';
     cursorDot.style.top = y + 'px';
     cursorDot.style.transform = 'translate(-50%,-50%) scale(1.15)';
   }
   
-  if (isMoving) {
-    for (let i = 0; i < 2; i++) {
+  if (isMoving && trail.length < maxTrailParticles) {
+    for (let i = 0; i < (isMobile ? 1 : 2); i++) {
       trail.push(new TrailParticle(x + (Math.random()-0.5)*15, y + (Math.random()-0.5)*15));
     }
   }
@@ -1054,7 +1086,7 @@ class FloatHeart {
     this.wobbleSpeed = 0.02 + Math.random() * 0.02;
     this.hue = 335 + Math.random() * 35;
     this.sat = 75 + Math.random() * 25;
-    this.blur = Math.random() < 0.25 ? 2 : 0;
+    this.blur = (!isMobile && Math.random() < 0.25) ? 2 : 0; // disabled dynamic blurs on mobile
   }
   update() {
     this.wobble += this.wobbleSpeed;
@@ -1076,7 +1108,7 @@ class FloatHeart {
 }
 
 
-// --- DYNAMIC REACTIVE FIREFLIES SYSTEM ---
+// --- DYNAMIC REACTIVE FIREFLIES SYSTEM (HARDWARE ACCELERATED RENDER) ---
 const fireflies = [];
 class Firefly {
   constructor() {
@@ -1087,8 +1119,8 @@ class Firefly {
     this.vy = (Math.random() - 0.5) * 0.8;
     this.angle = Math.random() * Math.PI * 2;
     this.speed = 0.01 + Math.random() * 0.02;
+    this.type = Math.random() < 0.6 ? 'gold' : 'pink';
     
-    this.hue = Math.random() < 0.6 ? (40 + Math.random() * 15) : (290 + Math.random() * 40);
     this.alpha = 0.3 + Math.random() * 0.6;
     this.breath = Math.random() * Math.PI;
     this.breathSpeed = 0.02 + Math.random() * 0.03;
@@ -1136,20 +1168,16 @@ class Firefly {
     ctx.save();
     ctx.globalAlpha = Math.max(0.1, this.alpha);
     
-    const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 3.5);
-    grad.addColorStop(0, `hsla(${this.hue}, 100%, 75%, 1)`);
-    grad.addColorStop(0.3, `hsla(${this.hue}, 100%, 70%, 0.5)`);
-    grad.addColorStop(1, `hsla(${this.hue}, 100%, 70%, 0)`);
+    // Draw pre-rendered glow texture for maximum mobile FPS
+    const cache = this.type === 'gold' ? glowCacheGold : glowCachePink;
+    const drawSize = this.size * 6.5;
+    ctx.drawImage(cache, this.x - drawSize/2, this.y - drawSize/2, drawSize, drawSize);
     
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size * 3.5, 0, Math.PI * 2);
-    ctx.fill();
     ctx.restore();
   }
 }
 
-for (let i = 0; i < 28; i++) {
+for (let i = 0; i < maxFireflies; i++) {
   fireflies.push(new Firefly());
 }
 
@@ -1247,14 +1275,14 @@ function startLetterTextReveal() {
     setTimeout(() => {
       b.classList.add('visible');
       if (b.classList.contains('highlight')) {
-        for (let k = 0; k < 15; k++) {
+        for (let k = 0; k < (isMobile ? 7 : 15); k++) {
           setTimeout(() => {
             const r = document.querySelector('.highlight');
             if (r) {
               const rect = r.getBoundingClientRect();
               floaters.push(new FloatHeart(rect.left + Math.random()*rect.width, rect.top));
             }
-          }, k * 90);
+          }, k * 95);
         }
       }
     }, 1000 + i * 2200);
@@ -1271,10 +1299,10 @@ function goToStep3() {
   
   setTimeout(() => {
     document.getElementById('love-words').classList.add('visible');
-    for (let i = 0; i < 75; i++) {
+    for (let i = 0; i < maxHeartWave; i++) {
       setTimeout(() => {
         floaters.push(new FloatHeart(null, null, true));
-      }, i * 50);
+      }, i * 65);
     }
   }, 400);
   
@@ -1368,12 +1396,12 @@ document.getElementById('btn-yes').addEventListener('click', () => {
     synth.modulateToTriumphant();
   }
   
-  for (let i = 0; i < 220; i++) {
-    setTimeout(() => confetti.push(new Confetti()), i * 12);
+  for (let i = 0; i < maxConfetti; i++) {
+    setTimeout(() => confetti.push(new Confetti()), i * 14);
   }
   
-  for (let i = 0; i < 100; i++) {
-    setTimeout(() => floaters.push(new FloatHeart(null, null, true)), i * 35);
+  for (let i = 0; i < (isMobile ? 35 : 100); i++) {
+    setTimeout(() => floaters.push(new FloatHeart(null, null, true)), i * 40);
   }
 });
 
@@ -1386,7 +1414,11 @@ function handleStart(e) {
   
   const x = e.clientX || (e.touches && e.touches[0].clientX) || mx;
   const y = e.clientY || (e.touches && e.touches[0].clientY) || my;
-  spawnTapHeart(x, y);
+  
+  // Limit trail density on mobile
+  if (trail.length < maxTrailParticles) {
+    spawnTapHeart(x, y);
+  }
 
   // Disperse fireflies near tap
   fireflies.forEach(f => {
@@ -1449,7 +1481,7 @@ function loop() {
 
   // Auto spawn background drift hearts
   if (floatingActive || currentStep === 4) {
-    if (Math.random() < 0.15) {
+    if (Math.random() < heartSpawnRate) {
       floaters.push(new FloatHeart());
     }
   }
@@ -1474,7 +1506,9 @@ function drawStarsBg() {
   starCanvas.height = window.innerHeight;
   const sc = starCanvas.getContext('2d');
   
-  for (let i = 0; i < 140; i++) {
+  const starCount = isMobile ? 70 : 140; // cut star count in half on mobile
+  
+  for (let i = 0; i < starCount; i++) {
     const x = Math.random() * starCanvas.width;
     const y = Math.random() * starCanvas.height;
     const r = Math.random() * 1.6;
@@ -1489,7 +1523,7 @@ function drawStarsBg() {
     starCanvas.width = window.innerWidth;
     starCanvas.height = window.innerHeight;
     sc.clearRect(0, 0, starCanvas.width, starCanvas.height);
-    for (let i = 0; i < 140; i++) {
+    for (let i = 0; i < starCount; i++) {
       const x = Math.random() * starCanvas.width;
       const y = Math.random() * starCanvas.height;
       const r = Math.random() * 1.6;
