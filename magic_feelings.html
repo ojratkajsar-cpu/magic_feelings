@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Магия чувств</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 100vw; height: 100vh; overflow: hidden;
+    font-family: Georgia, serif;
+    background: #1a0a2e;
+    cursor: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  #bg {
+    position: fixed; inset: 0; z-index: 0;
+    background: linear-gradient(135deg, #1a0a2e 0%, #2d1155 50%, #4a1942 100%);
+    transition: background 3s ease;
+  }
+
+  #canvas {
+    position: fixed; inset: 0; z-index: 1;
+    pointer-events: none;
+  }
+
+  #scene {
+    position: fixed; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 2rem;
+  }
+
+  .scene-panel {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+  }
+  .scene-panel.active { display: flex; }
+
+  #cursor-dot {
+    position: fixed; z-index: 999;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: rgba(255,150,180,0.8);
+    pointer-events: none;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s;
+    box-shadow: 0 0 8px rgba(255,100,150,0.6);
+  }
+
+  /* STEP 1 */
+  #step1 .pulse-text {
+    font-size: clamp(1.2rem, 5vw, 2rem);
+    color: rgba(255,200,220,0.7);
+    letter-spacing: 0.15em;
+    animation: pulse-glow 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse-glow {
+    0%,100% { opacity: 0.5; text-shadow: 0 0 10px rgba(255,150,180,0.3); }
+    50% { opacity: 1; text-shadow: 0 0 25px rgba(255,150,180,0.8), 0 0 50px rgba(255,100,150,0.4); }
+  }
+  #step1 .sub-hint {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: rgba(255,200,220,0.3);
+    letter-spacing: 0.1em;
+    animation: pulse-glow 3s ease-in-out infinite 1s;
+  }
+
+  /* TEXT BLOCKS */
+  .text-block {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 1.2s ease, transform 1.2s ease;
+    color: rgba(255,230,240,0.95);
+    line-height: 1.8;
+    margin: 0.6rem 0;
+  }
+  .text-block.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .text-block.big {
+    font-size: clamp(1.1rem, 4vw, 1.5rem);
+    font-style: italic;
+  }
+  .text-block.small {
+    font-size: clamp(0.9rem, 3vw, 1.1rem);
+    color: rgba(255,210,225,0.8);
+  }
+  .text-block.highlight {
+    font-size: clamp(1.3rem, 5vw, 1.9rem);
+    color: #ffcce0;
+    font-style: italic;
+    text-shadow: 0 0 20px rgba(255,100,150,0.5);
+  }
+
+  /* STEP 3 — climax */
+  #step3 .love-text {
+    font-size: clamp(2.5rem, 12vw, 5rem);
+    color: #ffaac8;
+    font-style: italic;
+    text-shadow: 0 0 30px rgba(255,80,130,0.7), 0 0 60px rgba(255,80,130,0.4);
+    animation: love-breathe 2s ease-in-out infinite;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 1.5s ease, transform 1.5s ease;
+  }
+  #step3 .love-text.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+  @keyframes love-breathe {
+    0%,100% { text-shadow: 0 0 30px rgba(255,80,130,0.7), 0 0 60px rgba(255,80,130,0.4); }
+    50% { text-shadow: 0 0 50px rgba(255,80,130,1), 0 0 100px rgba(255,80,130,0.6); }
+  }
+
+  /* STEP 4 */
+  #step4 .question {
+    font-size: clamp(1.2rem, 5vw, 1.8rem);
+    color: rgba(255,230,240,0.95);
+    margin-bottom: 2.5rem;
+    font-style: italic;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  #step4 .question.visible { opacity: 1; }
+
+  #btn-yes {
+    padding: 1rem 3rem;
+    font-size: 1.2rem;
+    font-family: Georgia, serif;
+    font-style: italic;
+    background: transparent;
+    color: #ffaac8;
+    border: 1.5px solid rgba(255,150,180,0.6);
+    border-radius: 50px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.3s ease;
+    opacity: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  #btn-yes.visible { opacity: 1; }
+  #btn-yes:hover {
+    background: rgba(255,100,150,0.2);
+    border-color: rgba(255,150,180,1);
+    box-shadow: 0 0 20px rgba(255,100,150,0.4);
+    transform: scale(1.05);
+  }
+  #btn-yes:active { transform: scale(0.97); }
+
+  #final-message {
+    font-size: clamp(1.1rem, 4vw, 1.5rem);
+    color: #ffcce0;
+    font-style: italic;
+    text-align: center;
+    line-height: 1.8;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+    display: none;
+  }
+  #final-message.visible { opacity: 1; }
+
+  /* AUDIO note */
+  #audio-hint {
+    position: fixed;
+    bottom: 1.5rem; left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
+    color: rgba(255,200,220,0.3);
+    letter-spacing: 0.05em;
+    z-index: 10;
+    transition: opacity 1s ease;
+  }
+
+  /* Tap ripple */
+  .tap-heart {
+    position: fixed;
+    pointer-events: none;
+    font-size: 1.5rem;
+    z-index: 100;
+    animation: tap-float 1.4s ease forwards;
+  }
+  @keyframes tap-float {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-80px) scale(0.6); }
+  }
+
+  /* Hearts canvas overlay */
+  #hearts-container {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 3;
+  }
+</style>
+</head>
+<body>
+
+<div id="bg"></div>
+<canvas id="canvas"></canvas>
+<div id="hearts-container"></div>
+<div id="cursor-dot"></div>
+
+<div id="scene">
+
+  <!-- STEP 1: Touch to begin -->
+  <div class="scene-panel active" id="step1">
+    <p class="pulse-text">✦ Прикоснись к экрану ✦</p>
+    <p class="sub-hint">у меня есть кое-что для тебя</p>
+  </div>
+
+  <!-- STEP 2: The letter -->
+  <div class="scene-panel" id="step2">
+    <div class="text-block big" id="t1">Знаешь, я долго думал,</div>
+    <div class="text-block small" id="t2">как это сказать тебе...</div>
+    <div class="text-block big" id="t3">Есть слова, которые сложно произнести вслух,</div>
+    <div class="text-block small" id="t4">но они живут внутри и просятся наружу.</div>
+    <div class="text-block highlight" id="t5">«Ты — лучшее, что со мной случилось»</div>
+    <div class="text-block small" id="t6">Это правда, без единого преувеличения.</div>
+    <div class="text-block big" id="t7">Рядом с тобой мир становится светлее,</div>
+    <div class="text-block small" id="t8">а каждый день — немного особенным.</div>
+  </div>
+
+  <!-- STEP 3: Climax -->
+  <div class="scene-panel" id="step3">
+    <div class="love-text" id="love-words">Я тебя люблю</div>
+  </div>
+
+  <!-- STEP 4: Final question -->
+  <div class="scene-panel" id="step4">
+    <p class="question" id="q-text">Улыбнулась? 🌙</p>
+    <button id="btn-yes">Да, конечно ✦</button>
+    <p id="final-message">
+      Я так и знал 🌸<br>
+      Ты — моя любимая девочка.<br>
+      Пусть этот день будет таким же тёплым,<br>
+      как то, что я чувствую к тебе.
+    </p>
+  </div>
+
+</div>
+
+<p id="audio-hint">♪ включи звук для полного погружения</p>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const bg = document.getElementById('bg');
+const cursorDot = document.getElementById('cursor-dot');
+const heartsContainer = document.getElementById('hearts-container');
+
+let W, H;
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// Trail particles
+const trail = [];
+class TrailParticle {
+  constructor(x, y) {
+    this.x = x; this.y = y;
+    this.life = 1;
+    this.decay = 0.025 + Math.random() * 0.02;
+    this.size = 6 + Math.random() * 8;
+    this.vx = (Math.random() - 0.5) * 1.5;
+    this.vy = -0.5 - Math.random() * 1.5;
+    this.type = Math.random() < 0.6 ? 'heart' : 'star';
+    this.hue = 330 + Math.random() * 40;
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.life -= this.decay;
+  }
+  draw() {
+    ctx.save();
+    ctx.globalAlpha = this.life * 0.9;
+    ctx.fillStyle = `hsl(${this.hue}, 90%, 75%)`;
+    ctx.translate(this.x, this.y);
+    if (this.type === 'heart') {
+      drawHeart(ctx, 0, 0, this.size * this.life);
+    } else {
+      drawStar(ctx, 0, 0, this.size * 0.6 * this.life);
+    }
+    ctx.restore();
+  }
+}
+
+function drawHeart(c, x, y, r) {
+  c.beginPath();
+  c.moveTo(x, y + r * 0.3);
+  c.bezierCurveTo(x, y - r * 0.4, x - r, y - r * 0.4, x - r, y + r * 0.1);
+  c.bezierCurveTo(x - r, y + r * 0.6, x, y + r * 1.1, x, y + r * 1.3);
+  c.bezierCurveTo(x, y + r * 1.1, x + r, y + r * 0.6, x + r, y + r * 0.1);
+  c.bezierCurveTo(x + r, y - r * 0.4, x, y - r * 0.4, x, y + r * 0.3);
+  c.fill();
+}
+
+function drawStar(c, x, y, r) {
+  c.beginPath();
+  for (let i = 0; i < 5; i++) {
+    const ang = (i * 4 * Math.PI / 5) - Math.PI / 2;
+    const ang2 = ang + 2 * Math.PI / 5;
+    if (i === 0) c.moveTo(x + Math.cos(ang) * r, y + Math.sin(ang) * r);
+    else c.lineTo(x + Math.cos(ang) * r, y + Math.sin(ang) * r);
+    c.lineTo(x + Math.cos(ang2) * r * 0.4, y + Math.sin(ang2) * r * 0.4);
+  }
+  c.closePath();
+  c.fill();
+}
+
+let mx = -100, my = -100, isMoving = false, moveTimer;
+
+function onMove(x, y) {
+  mx = x; my = y;
+  cursorDot.style.left = x + 'px';
+  cursorDot.style.top = y + 'px';
+  if (!isMoving) return;
+  for (let i = 0; i < 2; i++) {
+    trail.push(new TrailParticle(x + (Math.random()-0.5)*10, y + (Math.random()-0.5)*10));
+  }
+}
+
+document.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
+document.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const t = e.touches[0];
+  onMove(t.clientX, t.clientY);
+}, { passive: false });
+
+// Floating hearts system
+const floaters = [];
+class FloatHeart {
+  constructor(x, y, big) {
+    this.x = x || Math.random() * W;
+    this.y = y || H + 20;
+    this.size = big ? (15 + Math.random() * 25) : (5 + Math.random() * 12);
+    this.vx = (Math.random() - 0.5) * 1.2;
+    this.vy = -(0.8 + Math.random() * 1.5);
+    this.life = 1;
+    this.decay = 0.004 + Math.random() * 0.004;
+    this.wobble = Math.random() * Math.PI * 2;
+    this.wobbleSpeed = 0.03 + Math.random() * 0.02;
+    this.hue = 340 + Math.random() * 30;
+    this.sat = 70 + Math.random() * 30;
+  }
+  update() {
+    this.wobble += this.wobbleSpeed;
+    this.x += this.vx + Math.sin(this.wobble) * 0.4;
+    this.y += this.vy;
+    this.life -= this.decay;
+  }
+  draw() {
+    ctx.save();
+    ctx.globalAlpha = this.life * 0.85;
+    ctx.fillStyle = `hsl(${this.hue}, ${this.sat}%, 72%)`;
+    ctx.translate(this.x, this.y);
+    drawHeart(ctx, 0, 0, this.size);
+    ctx.restore();
+  }
+}
+
+let currentStep = 1;
+let floatingActive = false;
+let confettiActive = false;
+const confetti = [];
+
+class Confetti {
+  constructor() {
+    this.x = Math.random() * W;
+    this.y = -10;
+    this.vx = (Math.random() - 0.5) * 4;
+    this.vy = 3 + Math.random() * 4;
+    this.rot = Math.random() * Math.PI * 2;
+    this.rotV = (Math.random() - 0.5) * 0.15;
+    this.size = 6 + Math.random() * 8;
+    this.color = ['#ffaacc','#ffcc88','#88ccff','#ccaaff','#ffddaa','#ff88aa'][Math.floor(Math.random()*6)];
+    this.shape = Math.random() < 0.5 ? 'rect' : 'heart';
+    this.life = 1;
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.rot += this.rotV;
+    this.vx *= 0.99;
+    if (this.y > H + 20) this.life = 0;
+  }
+  draw() {
+    ctx.save();
+    ctx.globalAlpha = 0.9;
+    ctx.fillStyle = this.color;
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rot);
+    if (this.shape === 'rect') {
+      ctx.fillRect(-this.size/2, -this.size/4, this.size, this.size/2);
+    } else {
+      drawHeart(ctx, 0, 0, this.size * 0.6);
+    }
+    ctx.restore();
+  }
+}
+
+// Step machine
+function showStep(n) {
+  document.querySelectorAll('.scene-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('step' + n).classList.add('active');
+  currentStep = n;
+}
+
+// Step 1 → 2
+function startLetter() {
+  isMoving = true;
+  bg.style.background = 'linear-gradient(135deg, #2d0a4e 0%, #5a1a7a 50%, #7a2060 100%)';
+  showStep(2);
+  // Reveal texts one by one
+  const blocks = document.querySelectorAll('#step2 .text-block');
+  blocks.forEach((b, i) => {
+    setTimeout(() => {
+      b.classList.add('visible');
+      // Burst hearts on highlight
+      if (b.classList.contains('highlight')) {
+        for (let k = 0; k < 12; k++) {
+          setTimeout(() => {
+            const r = document.querySelector('.highlight');
+            if (r) {
+              const rect = r.getBoundingClientRect();
+              floaters.push(new FloatHeart(rect.left + Math.random()*rect.width, rect.top));
+            }
+          }, k * 80);
+        }
+      }
+    }, 800 + i * 1800);
+  });
+  // Auto advance to step 3
+  setTimeout(() => goToStep3(), 800 + blocks.length * 1800 + 2000);
+}
+
+function goToStep3() {
+  floatingActive = true;
+  bg.style.background = 'linear-gradient(135deg, #3d0a2e 0%, #6a1050 50%, #4a0a3a 100%)';
+  showStep(3);
+  setTimeout(() => {
+    document.getElementById('love-words').classList.add('visible');
+    // Launch heart flood
+    for (let i = 0; i < 60; i++) {
+      setTimeout(() => {
+        floaters.push(new FloatHeart(null, null, true));
+      }, i * 60);
+    }
+  }, 400);
+  setTimeout(() => goToStep4(), 5500);
+}
+
+function goToStep4() {
+  floatingActive = false;
+  showStep(4);
+  setTimeout(() => {
+    document.getElementById('q-text').classList.add('visible');
+    setTimeout(() => {
+      document.getElementById('btn-yes').classList.add('visible');
+    }, 800);
+  }, 600);
+}
+
+// TAP YES
+document.getElementById('btn-yes').addEventListener('click', () => {
+  confettiActive = true;
+  document.getElementById('btn-yes').style.display = 'none';
+  document.getElementById('q-text').style.display = 'none';
+  const fm = document.getElementById('final-message');
+  fm.style.display = 'block';
+  setTimeout(() => fm.classList.add('visible'), 100);
+  // Burst confetti
+  for (let i = 0; i < 200; i++) {
+    setTimeout(() => confetti.push(new Confetti()), i * 15);
+  }
+  // Also flood hearts
+  for (let i = 0; i < 80; i++) {
+    setTimeout(() => floaters.push(new FloatHeart(null, null, true)), i * 40);
+  }
+});
+
+// Touch/click to start
+function handleStart(e) {
+  if (currentStep === 1) {
+    e.preventDefault();
+    startLetter();
+    return;
+  }
+  // Tap heart effect on any step
+  const x = e.clientX || (e.touches && e.touches[0].clientX) || mx;
+  const y = e.clientY || (e.touches && e.touches[0].clientY) || my;
+  spawnTapHeart(x, y);
+}
+
+document.addEventListener('click', handleStart);
+document.addEventListener('touchstart', e => {
+  const t = e.touches[0];
+  handleStart({ clientX: t.clientX, clientY: t.clientY, preventDefault: () => e.preventDefault() });
+}, { passive: false });
+
+function spawnTapHeart(x, y) {
+  const el = document.createElement('div');
+  el.className = 'tap-heart';
+  el.textContent = ['💗','💖','💝','💕','🌸','✨'][Math.floor(Math.random()*6)];
+  el.style.left = (x - 12) + 'px';
+  el.style.top = (y - 12) + 'px';
+  heartsContainer.appendChild(el);
+  setTimeout(() => el.remove(), 1400);
+}
+
+// BG breathing
+let bgHue = 0;
+function breatheBg() {
+  bgHue = (bgHue + 0.3) % 360;
+  if (currentStep > 1) {
+    const shift = Math.sin(bgHue * Math.PI / 180) * 10;
+  }
+}
+
+// Main loop
+let floatTimer = 0;
+function loop() {
+  ctx.clearRect(0, 0, W, H);
+
+  // Trail
+  for (let i = trail.length - 1; i >= 0; i--) {
+    trail[i].update();
+    trail[i].draw();
+    if (trail[i].life <= 0) trail.splice(i, 1);
+  }
+
+  // Floaters
+  for (let i = floaters.length - 1; i >= 0; i--) {
+    floaters[i].update();
+    floaters[i].draw();
+    if (floaters[i].life <= 0 || floaters[i].y < -30) floaters.splice(i, 1);
+  }
+
+  // Auto spawn floaters when active
+  if (floatingActive || currentStep === 4) {
+    floatTimer++;
+    if (floatTimer % 8 === 0) {
+      floaters.push(new FloatHeart());
+    }
+  }
+
+  // Confetti
+  for (let i = confetti.length - 1; i >= 0; i--) {
+    confetti[i].update();
+    confetti[i].draw();
+    if (confetti[i].life <= 0) confetti.splice(i, 1);
+  }
+
+  breatheBg();
+  requestAnimationFrame(loop);
+}
+loop();
+
+// Stars background
+function drawStarsBg() {
+  const starCanvas = document.createElement('canvas');
+  starCanvas.style.cssText = 'position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.4';
+  starCanvas.width = window.innerWidth;
+  starCanvas.height = window.innerHeight;
+  const sc = starCanvas.getContext('2d');
+  for (let i = 0; i < 120; i++) {
+    const x = Math.random() * starCanvas.width;
+    const y = Math.random() * starCanvas.height;
+    const r = Math.random() * 1.5;
+    sc.beginPath();
+    sc.arc(x, y, r, 0, Math.PI * 2);
+    sc.fillStyle = `rgba(255,220,240,${0.3 + Math.random() * 0.7})`;
+    sc.fill();
+  }
+  document.body.insertBefore(starCanvas, document.body.firstChild);
+}
+drawStarsBg();
+
+// Twinkle the audio hint
+setTimeout(() => {
+  document.getElementById('audio-hint').style.opacity = '0';
+}, 8000);
+</script>
+</body>
+</html>
